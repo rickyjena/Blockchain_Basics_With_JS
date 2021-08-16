@@ -1,10 +1,9 @@
 const SHA256 = require("crypto-js/sha256")
 
 class Block{
-    constructor(index, timestamp, data, previousHash = ''){
-        this.index = index;
+    constructor(timestamp, transactions, previousHash = ''){
         this.timestamp = timestamp;
-        this.data = data;
+        this.transactions = transactions;
         this.previousHash = previousHash;
         this.hash = this.calculateHash();
         this.nonce = 0;
@@ -29,7 +28,7 @@ class Blockchain{
     }
 
     createGenesisBlock(){
-        return new Block(0, "08/09/2021", "Genesis block", "0");
+        return new Block("08/09/2021", "Genesis block", "0");
     }
     
     getLatestBlock(){
@@ -62,19 +61,19 @@ class Blockchain{
 
 let rickCoin = new Blockchain();
 
-console.log('Mining Block 1...');
-rickCoin.addBlock(new Block(1, "08/08/2021", { amount: 10}));
+// console.log('Mining Block 1...');
+// rickCoin.addBlock(new Block(1, "08/08/2021", { amount: 10}));
 
-console.log('Mining Block 2...');
-rickCoin.addBlock(new Block(2, "08/07/2021", { amount: 20}));
+// console.log('Mining Block 2...');
+// rickCoin.addBlock(new Block(2, "08/07/2021", { amount: 20}));
 
-// console.log(JSON.stringify(rickCoin, null, 3));
+// // console.log(JSON.stringify(rickCoin, null, 3));
 
-// console.log("Is blockchain valid? " + rickCoin.isChainValid());
+// // console.log("Is blockchain valid? " + rickCoin.isChainValid());
 
-// rickCoin.chain[1].data = {amount:500};
-// rickCoin.chain[1].hash = rickCoin.chain[1].calculateHash();
+// // rickCoin.chain[1].data = {amount:500};
+// // rickCoin.chain[1].hash = rickCoin.chain[1].calculateHash();
 
-// console.log(JSON.stringify(rickCoin, null, 3));
+// // console.log(JSON.stringify(rickCoin, null, 3));
 
-// console.log("Is blockchain valid? " + rickCoin.isChainValid());
+// // console.log("Is blockchain valid? " + rickCoin.isChainValid());
