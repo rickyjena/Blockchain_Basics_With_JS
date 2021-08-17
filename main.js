@@ -1,5 +1,12 @@
 const SHA256 = require("crypto-js/sha256")
 
+class Transaction{
+    constructor(fromAddress, toAddress, amount){
+        this.fromAddress = fromAddress;
+        this.toAddress = toAddress;
+        this.amount = amount;
+    }
+}
 class Block{
     constructor(timestamp, transactions, previousHash = ''){
         this.timestamp = timestamp;
@@ -25,6 +32,8 @@ class Blockchain{
     constructor(){
         this.chain = [this.createGenesisBlock()];
         this.difficulty = 4;
+        this.pendingTransactions = [];
+        this.miningReward = 100;
     }
 
     createGenesisBlock(){
@@ -35,10 +44,37 @@ class Blockchain{
         return this.chain[this.chain.length - 1];
     }
 
-    addBlock(newBlock){
-        newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.mineBlock(this.difficulty);
-        this.chain.push(newBlock);
+    minePendingTransaction(miningRewardAddress){
+        let block = new Block(Date.now(), this.pendingTransactions);
+        block.mineBlock(this.difficulty);
+
+        console.log('Block successfully mined');
+        this.chain.push(block);
+
+        this.pendingTransactions = [
+            new Transaction(null, miningRewardAddress, this.miningReward)
+        ];
+    }
+
+    createTransaction(transaction){
+        this.pendingTransactions.push(transaction)
+    }
+
+    getBalanceOfAddress(address){
+        let balance = 0;
+        for(const block of this.chain){
+            for(const trans of block.transactions){
+                if(trans.fromAddress === address){
+                    balance -= trans.amount;
+                }
+
+                if(trans.toAddress === address){
+                    balance += trans.amount;
+                }
+            }
+        }
+
+        return balance;
     }
 
     isChainValid(){
@@ -60,20 +96,15 @@ class Blockchain{
 }
 
 let rickCoin = new Blockchain();
+rickCoin.createTransaction(new Transaction('address1', 'address2', 150));
+rickCoin.createTransaction(new Transaction('address2', 'address1', 45));
 
-// console.log('Mining Block 1...');
-// rickCoin.addBlock(new Block(1, "08/08/2021", { amount: 10}));
+console.log('\n Starting miner ...');
+rickCoin.minePendingTransaction('derricks-address');
 
-// console.log('Mining Block 2...');
-// rickCoin.addBlock(new Block(2, "08/07/2021", { amount: 20}));
+console.log('\nBalance of Derrick is', rickCoin.getBalanceOfAddress('derricks-address'));
 
-// // console.log(JSON.stringify(rickCoin, null, 3));
+console.log('\n Starting miner again...');
+rickCoin.minePendingTransaction('derricks-address');
 
-// // console.log("Is blockchain valid? " + rickCoin.isChainValid());
-
-// // rickCoin.chain[1].data = {amount:500};
-// // rickCoin.chain[1].hash = rickCoin.chain[1].calculateHash();
-
-// // console.log(JSON.stringify(rickCoin, null, 3));
-
-// // console.log("Is blockchain valid? " + rickCoin.isChainValid());
+console.log('\nBalance of Derrick is', rickCoin.getBalanceOfAddress('derricks-address'));
